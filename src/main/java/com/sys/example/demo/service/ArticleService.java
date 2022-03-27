@@ -1,76 +1,55 @@
 package com.sys.example.demo.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sys.example.demo.repository.ArticleRepository;
 import com.sys.example.demo.vo.Article;
 
 @Service
 public class ArticleService {
-	
-	private List<Article> articles;
-	private int articlesLastId;	
-	
-	//생성자
-	public ArticleService() {
-		articles = new ArrayList<>();
-		articlesLastId = 0;
-		makeTestData();
-	}
+//Error creating bean with name 'usrArticleController': Unsatisfied dependency expressed through field 
+//'articleService'; nested exception is org.springframework.beans.factory.BeanCreationException: 
+//Error creating bean with name 'articleService' defined in file 
+//	[C:\work\... example\demo\service\ArticleService.class]: Instantiation of bean failed; 
+//nested exception is org.springframework.beans.BeanInstantiationException: 
+//Failed to instantiate [com.sys.example.demo.service.ArticleService]: Constructor threw exception; 
+//nested exception is java.lang.NullPointerException: Cannot invoke "com.sys.example.demo.repository.ArticleRepository.writeArticle(String, String)" 
+//	because "this.articleRepository" is null 그래서 makeTestData를 repository로 옮김	
+	@Autowired
+	private ArticleRepository articleRepository;
 
-	//서비스 메서드 시작
-	private void makeTestData() {
-		for(int i=1; i<=10; i++) {			
-			String title = "제목 " + i;
-			String body = "내용 " + i;
-			
-			writeArticle(title, body);
-		}
+	public ArticleService(ArticleRepository articleRepository) {
+		this.articleRepository = articleRepository;
+		articleRepository.makeTestData();
 	}
 	
-	// makeTestData()와 doAdd에서 겹치는 부분을 writeArticle()로 통합.
 	public Article writeArticle(String title, String body) {
-		int id = articlesLastId +1 ;
 		
-		Article article = new Article(id, title, body);
-		
-		articles.add(article);
-		articlesLastId = id;
-		
-		return article;		
-	}
-
-	// browser에서 입력한 id 번호의 article 찾기
-	public Article getArticle(int id) {// Article 이므로 반드시 return이 있어야 함
-		for(Article article : articles) {
-			if(article.getId() == id) {
-				return article; // 찾은 article을 doDelete()에 반환
-			}
-		}
-		return null;
-	}	
-
-// void인 이유: Article로 하면 반드시 return이 있어야 하므로 browser에서 입력한 id 번호로 article 찾아 제거
-	public void deleteArticle(int id) {
-		Article article = getArticle(id);
-		
-		articles.remove(article);		
-	}
-
-	public void modifyArticle(int id, String title, String body) {
-		Article article = getArticle(id);
-		
-		article.setTitle(title);
-		article.setBody(body);
+		return articleRepository.writeArticle(title, body);
 	}
 
 	public List<Article> getArticles() {
 		
-		return articles;
-	}	
+		return articleRepository.getArticles();
+	}
 
-	//서비스 메서드 끝
+	public Article getArticle(int id) {
+		
+		return articleRepository.getArticle(id);
+	}
+
+	public void deleteArticle(int id) {
+		
+		articleRepository.deleteArticle(id);
+	}
+
+	public void modifyArticle(int id, String title, String body) {
+		
+		articleRepository.modifyArticle(id, title, body);
+	}
+	
 
 }
