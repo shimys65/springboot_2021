@@ -32,8 +32,9 @@ public class UsrArticleController {
 			
 			writeArticle(title, body);
 		}
-	}	
+	}
 	
+	// makeTestData()와 doAdd에서 겹치는 부분을 writeArticle()로 통합.
 	private Article writeArticle(String title, String body) {
 		int id = articlesLastId +1 ;
 		
@@ -62,6 +63,13 @@ public class UsrArticleController {
 		articles.remove(article);		
 	}
 
+	private void modifyArticle(int id, String title, String body) {
+		Article article = getArticle(id);
+		
+		article.setTitle(title);
+		article.setBody(body);
+	}	
+
 	//서비스 메서드 끝
 
 	//액션 메서드 시작
@@ -80,6 +88,17 @@ public class UsrArticleController {
 		return articles;
 	}
 	
+	@RequestMapping("/usr/article/getArticle")
+	@ResponseBody
+	public Object getArticleAction(int id) {
+		Article article = getArticle(id);
+		
+		if(article == null) {
+			return id + "번 게시물이 없음";
+		}
+		return article;
+	}
+	
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody
 	// browser에 입력되는 명령어 : /usr/article/doDelete?id=1 ==> id 1번 삭제
@@ -94,5 +113,19 @@ public class UsrArticleController {
 		return id + "번 게시물을 삭제함";
 	}
 	
+	@RequestMapping("/usr/article/doModify")
+	@ResponseBody
+	// browser에 입력되는 명령어 : /usr/article/doModify?id=1&title=ㅋㅋㅋ&body=ㅠㅠㅠ
+	public String doModify(int id, String title, String body) {
+		Article article = getArticle(id);
+		
+		if(article == null) {
+			return id + "번 게시물이 없음";
+		}		
+		modifyArticle(id, title, body);
+	
+		return id + "번 게시물이 수정됨";
+	}
+
 	//액션 메서드 끝
 }
