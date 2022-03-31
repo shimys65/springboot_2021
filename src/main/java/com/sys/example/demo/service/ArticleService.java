@@ -23,12 +23,12 @@ public class ArticleService {
 
 	public ArticleService(ArticleRepository articleRepository) {
 		this.articleRepository = articleRepository;
-		articleRepository.makeTestData();
 	}
 	
-	public Article writeArticle(String title, String body) {
+	public int writeArticle(String title, String body) {		
+		articleRepository.writeArticle(title, body);
 		
-		return articleRepository.writeArticle(title, body);
+		return articleRepository.getLastInsertId();
 	}
 
 	public List<Article> getArticles() {

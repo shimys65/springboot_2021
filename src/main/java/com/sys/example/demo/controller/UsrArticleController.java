@@ -19,8 +19,10 @@ public class UsrArticleController {
 	//액션 메서드 시작
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
+	// browser에 입력되는 명령어 : /usr/article/doAdd?title=제목4&body=내용4
 	public Article doAdd(String title, String body) {
-		Article article = articleService.writeArticle(title, body);
+		int id = articleService.writeArticle(title, body);
+		Article article = articleService.getArticle(id);
 		
 		return article;
 	}
@@ -70,6 +72,5 @@ public class UsrArticleController {
 	
 		return id + "번 게시물이 수정됨";
 	}
-
 	//액션 메서드 끝
 }
