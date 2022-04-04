@@ -21,21 +21,34 @@ public class UsrArticleController {
 	//액션 메서드 시작
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
-	// browser에 입력되는 명령어 : /usr/article/doAdd?title=제목4&body=내용4
-	public Article doAdd(String title, String body) {
-		int id = articleService.writeArticle(title, body);
+// http://localhost:8011/usr/article/doAdd?title=제목4&body=내용4
+	public ResultData doAdd(String title, String body) {
+		if(Ut.empty(title)) {
+			return ResultData.from("F-1", "title을 입력하세요");
+		}
+		
+		if(Ut.empty(body)) {
+			return ResultData.from("F-2", "body를 입력하세요");
+		}
+		
+		ResultData writeArticleRd = articleService.writeArticle(title, body);
+		int id = (int) writeArticleRd.getData1();
 		Article article = articleService.getArticle(id);
 		
-		return article;
+// brewser에 {"id":4,"title":"제목4","body":"내용4"} 출력		
+//		return article;
+		
+		return ResultData.from(writeArticleRd.getResultCode(), writeArticleRd.getMsg(), article);
 	}
 	
+// 리스트 articles에 저장된 모든 article을 browser에 보여줌	
 	@RequestMapping("/usr/article/getArticles")
 	@ResponseBody
-	public List<Article> getArticles() {
-	// 리스트 articles에 저장된 모든 article을 browser에 보여줌	
+	public List<Article> getArticles() {		
 		return articleService.getArticles();
 	}
 	
+// http://localhost:8011/usr/article/getArticle?id=1
 	@RequestMapping("/usr/article/getArticle")
 	@ResponseBody
 	public ResultData getArticle(int id) {
@@ -45,11 +58,11 @@ public class UsrArticleController {
 			return ResultData.from("F-1", (String) Ut.f("%d번 게시물이 없음", id));
 		}
 		return ResultData.from("S-1", (String) Ut.f("%d번 게시물", id), article);
-	}
+	}	
 	
+// http://localhost:8011/usr/article/doDelete?id=1 ==> id 1번 삭제
 	@RequestMapping("/usr/article/doDelete")
-	@ResponseBody
-	// browser에 입력되는 명령어 : /usr/article/doDelete?id=1 ==> id 1번 삭제
+	@ResponseBody	
 	public String doDelete(int id) {//String인 이유 : return 값이 문자
 		Article article = articleService.getArticle(id);// id가 1이므로 1번 article을 찾자
 		
@@ -60,10 +73,10 @@ public class UsrArticleController {
 	
 		return id + "번 게시물을 삭제함";
 	}
-	
+		
+// http://localhost:8011/usr/article/doModify?id=1&title=ㅋㅋㅋ&body=ㅠㅠㅠ
 	@RequestMapping("/usr/article/doModify")
-	@ResponseBody
-	// browser에 입력되는 명령어 : /usr/article/doModify?id=1&title=ㅋㅋㅋ&body=ㅠㅠㅠ
+	@ResponseBody	
 	public String doModify(int id, String title, String body) {
 		Article article = articleService.getArticle(id);
 		

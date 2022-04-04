@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sys.example.demo.repository.ArticleRepository;
+import com.sys.example.demo.util.Ut;
 import com.sys.example.demo.vo.Article;
+import com.sys.example.demo.vo.ResultData;
 
 @Service
 public class ArticleService {
@@ -25,10 +27,11 @@ public class ArticleService {
 		this.articleRepository = articleRepository;
 	}
 	
-	public int writeArticle(String title, String body) {		
-		articleRepository.writeArticle(title, body);
+	public ResultData writeArticle(String title, String body) {		
+		articleRepository.writeArticle(title, body);		
+		int id =  articleRepository.getLastInsertId();
 		
-		return articleRepository.getLastInsertId();
+		return ResultData.from("S-1", (String) Ut.f("%d번 게시물 생성", id), id);
 	}
 
 	public List<Article> getArticles() {

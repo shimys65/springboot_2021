@@ -13,7 +13,8 @@ public class ResultData {
 	private ResultData() {
 		
 	}
-	
+
+// Overloading -- null이 빠지면 overflow 발생.
 	public static ResultData from(String resultCode, String msg) {
 		return from(resultCode, msg, null);
 	}
