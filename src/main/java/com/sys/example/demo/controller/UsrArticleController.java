@@ -35,8 +35,7 @@ public class UsrArticleController {
 		int id = (int) writeArticleRd.getData1();
 		Article article = articleService.getArticle(id);
 		
-// brewser에 {"id":4,"title":"제목4","body":"내용4"} 출력		
-//		return article;
+//		return article;// browser에 {"id":4,"title":"제목4","body":"내용4"} 출력
 		
 		return ResultData.from(writeArticleRd.getResultCode(), writeArticleRd.getMsg(), article);
 	}
@@ -44,8 +43,10 @@ public class UsrArticleController {
 // 리스트 articles에 저장된 모든 article을 browser에 보여줌	
 	@RequestMapping("/usr/article/getArticles")
 	@ResponseBody
-	public List<Article> getArticles() {		
-		return articleService.getArticles();
+	public ResultData getArticles() {		
+		List<Article> articles =  articleService.getArticles();
+		
+		return ResultData.from("S-1", "게시물 리스트 입니다.", articles);
 	}
 	
 // http://localhost:8011/usr/article/getArticle?id=1
