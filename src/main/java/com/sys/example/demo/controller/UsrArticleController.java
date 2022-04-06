@@ -14,7 +14,6 @@ import com.sys.example.demo.vo.ResultData;
 
 @Controller
 public class UsrArticleController {
-	//인스턴스 변수
 	@Autowired
 	private ArticleService articleService;
 
@@ -22,7 +21,7 @@ public class UsrArticleController {
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
 // http://localhost:8011/usr/article/doAdd?title=제목4&body=내용4
-	public ResultData doAdd(String title, String body) {
+	public ResultData<Article> doAdd(String title, String body) {
 		if(Ut.empty(title)) {
 			return ResultData.from("F-1", "title을 입력하세요");
 		}
@@ -30,20 +29,19 @@ public class UsrArticleController {
 		if(Ut.empty(body)) {
 			return ResultData.from("F-2", "body를 입력하세요");
 		}
-		
-		ResultData writeArticleRd = articleService.writeArticle(title, body);
-		int id = (int) writeArticleRd.getData1();
+// writeArticleRd 내용 : writeArticleRd의 resultCode로 S-1, mag로 4번 게시물 생성, data1으로 4
+		ResultData<Integer> writeArticleRd = articleService.writeArticle(title, body);
+		int id = writeArticleRd.getData1();
 		Article article = articleService.getArticle(id);
 		
-//		return article;// browser에 {"id":4,"title":"제목4","body":"내용4"} 출력
-		
-		return ResultData.from(writeArticleRd.getResultCode(), writeArticleRd.getMsg(), article);
+//		return article;// browser에 {"id":4,"title":"제목4","body":"내용4"} 출력		
+		return ResultData.newData(writeArticleRd, article);
 	}
 	
 // 리스트 articles에 저장된 모든 article을 browser에 보여줌	
 	@RequestMapping("/usr/article/getArticles")
 	@ResponseBody
-	public ResultData getArticles() {		
+	public ResultData<List<Article>> getArticles() {		
 		List<Article> articles =  articleService.getArticles();
 		
 		return ResultData.from("S-1", "게시물 리스트 입니다.", articles);
@@ -52,7 +50,7 @@ public class UsrArticleController {
 // http://localhost:8011/usr/article/getArticle?id=1
 	@RequestMapping("/usr/article/getArticle")
 	@ResponseBody
-	public ResultData getArticle(int id) {
+	public ResultData<Article> getArticle(int id) {
 		Article article = articleService.getArticle(id);
 		
 		if(article == null) {
@@ -64,29 +62,29 @@ public class UsrArticleController {
 // http://localhost:8011/usr/article/doDelete?id=1 ==> id 1번 삭제
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody	
-	public String doDelete(int id) {//String인 이유 : return 값이 문자
+	public ResultData<Integer> doDelete(int id) {//String인 이유 : return 값이 문자
 		Article article = articleService.getArticle(id);// id가 1이므로 1번 article을 찾자
 		
 		if(article == null) {
-			return id + "번 게시물이 없음";
+			return ResultData.from("F-1", (String) Ut.f("%d번 게시물이 없음", id));
 		}		
 		articleService.deleteArticle(id);
 	
-		return id + "번 게시물을 삭제함";
+		return ResultData.from("F-1", (String) Ut.f("%d번 게시물을 삭제함", id), id);
 	}
 		
 // http://localhost:8011/usr/article/doModify?id=1&title=ㅋㅋㅋ&body=ㅠㅠㅠ
 	@RequestMapping("/usr/article/doModify")
 	@ResponseBody	
-	public String doModify(int id, String title, String body) {
+	public ResultData<Integer> doModify(int id, String title, String body) {
 		Article article = articleService.getArticle(id);
 		
 		if(article == null) {
-			return id + "번 게시물이 없음";
+			return ResultData.from("F-1", (String) Ut.f("%d번 게시물이 없음", id));
 		}		
 		articleService.modifyArticle(id, title, body);
 	
-		return id + "번 게시물이 수정됨";
+		return ResultData.from("F-1", (String) Ut.f("%d번 게시물을 수정함", id), id);
 	}
 	//액션 메서드 끝
 }
