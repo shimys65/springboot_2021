@@ -2,6 +2,8 @@ package com.sys.example.demo.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,19 @@ public class UsrArticleController {
 	@RequestMapping("/usr/article/doAdd")
 	@ResponseBody
 // http://localhost:8011/usr/article/doAdd?title=제목4&body=내용4
-	public ResultData<Article> doAdd(String title, String body) {
+	public ResultData<Article> doAdd(HttpSession httpsession, String title, String body) {
+		boolean isLogined = false;
+		int loginedMemberId = 0;
+		
+		if(httpsession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+			loginedMemberId = (int) httpsession.getAttribute("loginedMemberId");
+		}
+		
+		if(isLogined == false) {
+			return ResultData.from("F-A", "로그인 하삼.");
+		}
+		
 		if(Ut.empty(title)) {
 			return ResultData.from("F-1", "title을 입력하세요");
 		}
@@ -30,7 +44,7 @@ public class UsrArticleController {
 			return ResultData.from("F-2", "body를 입력하세요");
 		}
 // writeArticleRd 내용 : writeArticleRd의 resultCode로 S-1, mag로 4번 게시물 생성, data1으로 4
-		ResultData<Integer> writeArticleRd = articleService.writeArticle(title, body);
+		ResultData<Integer> writeArticleRd = articleService.writeArticle(loginedMemberId, title, body);
 		int id = writeArticleRd.getData1();
 		Article article = articleService.getArticle(id);
 		
@@ -62,15 +76,32 @@ public class UsrArticleController {
 // http://localhost:8011/usr/article/doDelete?id=1 ==> id 1번 삭제
 	@RequestMapping("/usr/article/doDelete")
 	@ResponseBody	
-	public ResultData<Integer> doDelete(int id) {//String인 이유 : return 값이 문자
+	public ResultData<Integer> doDelete(HttpSession httpsession, int id) {//String인 이유 : return 값이 문자
+		boolean isLogined = false;
+		int loginedMemberId = 0;
+		
+		if(httpsession.getAttribute("loginedMemberId") != null) {
+			isLogined = true;
+			loginedMemberId = (int) httpsession.getAttribute("loginedMemberId");
+		}
+		
+		if(isLogined == false) {
+			return ResultData.from("F-A", "로그인 하삼.");
+		}		
+		
 		Article article = articleService.getArticle(id);// id가 1이므로 1번 article을 찾자
+		
+		if(article.getMemberId() != loginedMemberId) {
+			return ResultData.from("F-2", "권한이 없쓰요.");
+		}		
 		
 		if(article == null) {
 			return ResultData.from("F-1", (String) Ut.f("%d번 게시물이 없음", id));
-		}		
+		}
+		
 		articleService.deleteArticle(id);
 	
-		return ResultData.from("F-1", (String) Ut.f("%d번 게시물을 삭제함", id), id);
+		return ResultData.from("S-1", (String) Ut.f("%d번 게시물을 삭제함", id), id);
 	}
 		
 // http://localhost:8011/usr/article/doModify?id=1&title=ㅋㅋㅋ&body=ㅠㅠㅠ
