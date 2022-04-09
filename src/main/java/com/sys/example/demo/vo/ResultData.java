@@ -8,6 +8,8 @@ public class ResultData<DT> {
 	@Getter
 	private String msg;
 	@Getter
+	private String data1Name;
+	@Getter
 	private DT data1;
 	
 	private ResultData() {
@@ -16,14 +18,15 @@ public class ResultData<DT> {
 
 	// Overloading 
 	public static <DT> ResultData<DT> from(String resultCode, String msg) {
-		return from(resultCode, msg, null);//null이 빠지면 overflow 발생.
+		return from(resultCode, msg, null, null);//null이 빠지면 overflow 발생.
 	}
 	
-	public static <DT> ResultData<DT> from(String resultCode, String msg, DT data1) {
+	public static <DT> ResultData<DT> from(String resultCode, String msg, String data1Name, DT data1) {
 		ResultData<DT> rd = new ResultData<DT>();
 		
 		rd.resultCode = resultCode;
 		rd.msg = msg;
+		rd.data1Name = data1Name;
 		rd.data1 = data1;
 		
 		return rd;
@@ -37,8 +40,8 @@ public class ResultData<DT> {
 		return isSuccess() == false;
 	}
 
-	public static <DT> ResultData<DT> newData(ResultData joinRd, DT newData) {
+	public static <DT> ResultData<DT> newData(ResultData oldRd, String data1Name, DT newData) {
 		
-		return from(joinRd.getResultCode(), joinRd.getMsg(), newData);
+		return from(oldRd.getResultCode(), oldRd.getMsg(), data1Name, newData);
 	}	
 }

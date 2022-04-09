@@ -56,7 +56,7 @@ public class UsrMemberController {
 
 		Member member = memberService.getMemberById(joinRd.getData1());		
 //		return ResultData.from(joinRd.getResultCode(), joinRd.getMsg(), member);
-		return ResultData.newData(joinRd, member);
+		return ResultData.newData(joinRd, "member", member);
 		
 	}
 	
