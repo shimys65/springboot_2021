@@ -10,12 +10,14 @@ import com.sys.example.demo.service.MemberService;
 public class UsrHomeController {
 	
 	@RequestMapping("/usr/home/main")
-	@ResponseBody
-	public String getString() {
-		return "안뇽";
+	public String showMain() {
+		return "usr/home/main";
 	}
-
-
+	
+	@RequestMapping("/") // Root로 연결
+	public String showRoot() {
+		return "redirect:/usr/home/main";
+	}
 }
 
 
